@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الأدمن - إدارة الحجوزات</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
+        .dark input[type="date"]::-webkit-calendar-picker-indicator,
+        .dark input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen pb-12">
+
+    <header class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="logo.png" alt="Logo Light" class="w-14 h-14 object-contain bg-white rounded-xl p-1 border border-slate-200 shadow-sm block dark:hidden">
+                <img src="logo2.png" alt="Logo Dark" class="w-14 h-14 object-contain bg-slate-800 rounded-xl p-1 border border-slate-700 shadow-sm hidden dark:block">
+                <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100">إدارة الاستوديو</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" title="تبديل الوضع الليلي">
+                    <svg id="sun-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v2a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l-2.12-2.12a4 4 0 001.414-1.414l2.12 2.12a1 1 0 11-1.414 1.414zM2.05 6.464A1 1 0 103.464 5.05l2.12 2.12a4 4 0 00-1.414 1.414L2.05 6.464zm9.9 9.9a1 1 0 11-1.414-1.414l2.12-2.12a4 4 0 001.414 1.414l-2.12 2.12zM6.464 2.05A1 1 0 105.05 3.464l2.12 2.12a4 4 0 001.414-1.414L6.464 2.05zm9.9 9.9a1 1 0 111.414 1.414l-2.12 2.12a4 4 0 00-1.414-1.414l2.12-2.12z" clip-rule="evenodd"/></svg>
+                    <svg id="moon-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+                </button>
+                <span class="text-xs text-rose-600 dark:text-rose-400 font-semibold bg-rose-50 dark:bg-rose-900 px-3 py-1.5 rounded-full border border-rose-100 dark:border-rose-800">لوحة تحكم المشرفين</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 mt-8">
+
+        <!-- واجهة تسجيل الدخول (Login) -->
+        <section id="admin-login-view" class="max-w-md mx-auto my-12 transition-all">
+            <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-xl space-y-6">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900">تسجيل دخول الإدارة</h3>
+                    <p class="text-xs text-slate-400 mt-1">يرجى إدخال البيانات المعتمدة للوصول إلى لوحة التحكم</p>
+                </div>
+
+                <form id="login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">البريد الإلكتروني</label>
+                            <input type="email" id="login-email" placeholder="admin@studio.com" required
+                                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm text-left font-mono" dir="ltr">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">كلمة المرور</label>
+                        <input type="password" id="login-password" placeholder="••••••••" required
+                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm text-left font-mono" dir="ltr">
+                    </div>
+                    <div id="login-error-msg" class="text-rose-500 text-xs hidden text-center font-semibold">البريد أو كلمة المرور غير صحيحة!</div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all text-sm shadow-md">تسجيل الدخول</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- لوحة التحكم الكاملة (Dashboard) -->
+        <section id="admin-dashboard-view" class="hidden space-y-8 transition-all">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200 dark:border-slate-700 pb-5">
+                <div>
+                    <span class="bg-indigo-50 text-indigo-600 text-xs px-2.5 py-1 rounded-full font-bold">ADMIN PANEL</span>
+                    <h2 class="text-3xl font-extrabold text-slate-900 mt-2">لوحة التحكم من قاعدة البيانات</h2>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="refreshDashboardData()" class="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-all text-slate-700 flex items-center gap-2 shadow-sm">
+                        <span>تحديث البيانات</span>
+                    </button>
+                    <button onclick="handleAdminLogout()" class="px-4 py-2.5 bg-rose-50 border border-rose-100 rounded-xl text-sm font-semibold hover:bg-rose-100 transition-all text-rose-600 flex items-center gap-2 shadow-sm">
+                        <span>خروج</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- الإحصائيات الفورية المحدثة بالحالات الجديدة -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-400">إجمالي الحجوزات</p>
+                        <h3 id="stat-total-bookings" class="text-3xl font-black text-slate-800 mt-1">0</h3>
+                        <p class="text-xs text-slate-400 mt-1">قاعدة البيانات</p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-400">نشط وقادم</p>
+                        <h3 id="stat-active-bookings" class="text-3xl font-black text-amber-600 mt-1">0</h3>
+                        <p class="text-xs text-slate-400 mt-1">جلسات لم تبدأ بعد</p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-400">جلسات منتهية (خلصت)</p>
+                        <h3 id="stat-finished-bookings" class="text-3xl font-black text-emerald-600 mt-1">0</h3>
+                        <p class="text-xs text-slate-400 mt-1">تمت بنجاح</p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-400">إجمالي الإيرادات</p>
+                        <h3 id="stat-total-revenue" class="text-3xl font-black text-indigo-600 mt-1">0 ج</h3>
+                        <p class="text-xs text-slate-400 mt-1">للحجوزات المؤكدة</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الفلترة والبحث المطور -->
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex bg-slate-100 p-1 rounded-xl w-full md:w-auto overflow-x-auto">
+                    <button onclick="filterBookings('all')" id="filter-all" class="flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm">الكل</button>
+                    <button onclick="filterBookings('active')" id="filter-active" class="flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600">نشط (لم يبدأ)</button>
+                    <button onclick="filterBookings('finished')" id="filter-finished" class="flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600">انتهت (خلصت)</button>
+                    <button onclick="filterBookings('monthly')" id="filter-monthly" class="flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600">باقات</button>
+                    <button onclick="filterBookings('cancelled')" id="filter-cancelled" class="flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600">ملغية</button>
+                </div>
+                <div class="relative w-full md:w-80">
+                    <input type="text" id="search-input" oninput="handleSearch()" placeholder="ابحث باسم أو رقم حجز..."
+                        class="w-full pl-4 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm">
+                </div>
+            </div>
+
+            <!-- جدول الحجوزات وإدارة حالات الجلسات -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-300 text-xs font-bold">
+                                <th class="p-4">رقم الحجز</th>
+                                <th class="p-4">العميل</th>
+                                <th class="p-4">تفاصيل الجلسة</th>
+                                <th class="p-4">الموعد</th>
+                                <th class="p-4">الإجمالي</th>
+                                <th class="p-4">الحالة</th>
+                                <th class="p-4 text-left">إجراءات التحكم</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookings-table-body" class="divide-y divide-slate-100 text-sm text-slate-700"></tbody>
+                    </table>
+                </div>
+                <div id="no-bookings-placeholder" class="py-16 text-center flex flex-col items-center justify-center hidden">
+                    <p class="text-slate-500 font-semibold text-lg">لا توجد حجوزات متطابقة</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- إشعار Toast منبثق -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 translate-y-24 opacity-0 transition-all duration-300 pointer-events-none z-50">
+        <div class="w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</div>
+        <span id="toast-message" class="text-sm font-semibold">عملية ناجحة</span>
+    </div>
+
+    <script>
+        const ADMIN_CREDENTIALS = { email: "masar@studio.com", password: "masar2026" };
+        let bookings = [];
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        window.addEventListener('DOMContentLoaded', () => { checkAuth(); });
+
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            document.getElementById('admin-login-view').classList.toggle('hidden', isLoggedIn);
+            document.getElementById('admin-dashboard-view').classList.toggle('hidden', !isLoggedIn);
+            if (isLoggedIn) refreshDashboardData();
+        }
+
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+                localStorage.setItem('admin_logged_in', 'true');
+                showToast('تم تسجيل الدخول بنجاح');
+                checkAuth();
+            } else {
+                document.getElementById('login-error-msg').classList.remove('hidden');
+            }
+        }
+
+        function handleAdminLogout() {
+            localStorage.removeItem('admin_logged_in');
+            showToast('تم تسجيل الخروج');
+            checkAuth();
+        }
+
+        function refreshDashboardData() {
+            fetch('/api/bookings')
+                .then(res => res.json())
+                .then(data => {
+                    bookings = data;
+                    updateDashboardStats();
+                    renderBookingsTable();
+                })
+                .catch(() => showToast('فشل الاتصال بقاعدة البيانات', true));
+        }
+
+        function updateDashboardStats() {
+            // إجمالي الحجوزات بقاعدة البيانات
+            document.getElementById('stat-total-bookings').innerText = bookings.length;
+            // نشط وقادم
+            document.getElementById('stat-active-bookings').innerText = bookings.filter(b => b.status === 'active').length;
+            // جلسات انتهت وخلصت
+            document.getElementById('stat-finished-bookings').innerText = bookings.filter(b => b.status === 'finished').length;
+            
+            // حساب الإيرادات من الجلسات النشطة والمنتهية (باستثناء الملغاة)
+            const rev = bookings.filter(b => b.status === 'active' || b.status === 'finished').reduce((sum, b) => sum + b.totalPrice, 0);
+            document.getElementById('stat-total-revenue').innerText = rev.toLocaleString('ar-EG') + ' ج';
+        }
+
+        function renderBookingsTable() {
+            const tableBody = document.getElementById('bookings-table-body');
+            tableBody.innerHTML = '';
+
+            let filtered = bookings.filter(b => {
+                if (currentFilter === 'active' && b.status !== 'active') return false;
+                if (currentFilter === 'finished' && b.status !== 'finished') return false;
+                if (currentFilter === 'cancelled' && b.status !== 'cancelled') return false;
+                if (currentFilter === 'monthly' && b.type !== 'monthly') return false;
+                if (searchQuery) {
+                    const q = searchQuery.toLowerCase();
+                    return b.clientName.toLowerCase().includes(q) || b.id.toLowerCase().includes(q) || b.phone.includes(q);
+                }
+                return true;
+            });
+
+            document.getElementById('no-bookings-placeholder').classList.toggle('hidden', filtered.length > 0);
+
+            filtered.forEach(b => {
+                let detailsText = '';
+                if (b.type === 'monthly') {
+                    detailsText = '<span class="text-emerald-600 font-bold text-xs bg-emerald-50 px-2.5 py-1 rounded-md">الباقة الشهرية الكاملة</span>';
+                } else {
+                    const d = b.details;
+                    let parts = [];
+                    if (d && d.hours > 0) parts.push(`${d.hours} س تصوير (${d.hourRate} ج)`);
+                    if (d && d.reels > 0) parts.push(`${d.reels} ريلز (${d.reelRate} ج)`);
+                    if (d && d.posts > 0) parts.push(`${d.posts} بوستات (١٥٠ ج)`);
+                    detailsText = `<div class="text-[11px] text-slate-500 font-semibold flex flex-wrap gap-1">${parts.map(p => `<span class="bg-indigo-50/50 text-indigo-700 px-2 py-0.5 rounded">${p}</span>`).join('')}</div>`;
+                }
+
+                // تحديد شكل شارات الحالات المتطورة
+                let statusBadge = '';
+                if (b.status === 'active') {
+                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700">● نشط وقادم</span>';
+                } else if (b.status === 'finished') {
+                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700">✓ انتهت / خلصت</span>';
+                } else {
+                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-600">✕ ملغى</span>';
+                }
+
+                // منطق الإجراءات الديناميكي بناءً على حالة الحجز الحالية
+                let actionsHTML = '';
+                if (b.status === 'active') {
+                    actionsHTML = `
+                        <button onclick="updateBookingStatus('${b.id}', 'finished')" class="text-xs font-bold text-emerald-700 hover:text-emerald-900 transition bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1.5 rounded-lg">خلصت / انتهت</button>
+                        <button onclick="updateBookingStatus('${b.id}', 'cancelled')" class="text-xs font-bold text-rose-600 hover:text-rose-800 transition bg-rose-50 hover:bg-rose-100 px-2.5 py-1.5 rounded-lg">إلغاء</button>
+                    `;
+                } else if (b.status === 'finished') {
+                    actionsHTML = `
+                        <button onclick="updateBookingStatus('${b.id}', 'active')" class="text-xs font-bold text-slate-600 hover:text-slate-800 transition bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg">تنشيط مجدداً</button>
+                        <button onclick="deleteBooking('${b.id}')" class="text-xs font-bold text-slate-400 hover:text-rose-600 transition hover:bg-rose-50 px-2.5 py-1.5 rounded-lg">حذف نهائي</button>
+                    `;
+                } else {
+                    actionsHTML = `
+                        <button onclick="updateBookingStatus('${b.id}', 'active')" class="text-xs font-bold text-slate-600 hover:text-slate-800 transition bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg">تنشيط مجدداً</button>
+                        <button onclick="deleteBooking('${b.id}')" class="text-xs font-bold text-slate-400 hover:text-rose-600 transition hover:bg-rose-50 px-2.5 py-1.5 rounded-lg">حذف نهائي</button>
+                    `;
+                }
+
+                const dateParts = b.date.split('-');
+                const formattedDate = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}` : b.date;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 transition border-b border-slate-100/50";
+                tr.innerHTML = `
+                    <td class="p-4 font-mono font-bold text-indigo-600 text-xs">${b.id}</td>
+                    <td class="p-4">
+                        <div class="font-bold text-slate-800">${b.clientName}</div>
+                        <div class="text-xs text-slate-400 mt-0.5" dir="ltr" style="text-align: right;">${b.phone}</div>
+                    </td>
+                    <td class="p-4">${detailsText}</td>
+                    <td class="p-4">
+                        <div class="font-semibold text-slate-700 text-xs">${formattedDate}</div>
+                        <div class="text-xs text-slate-400 mt-0.5">${convertTime12h(b.time)}</div>
+                    </td>
+                    <td class="p-4 font-bold text-slate-900 font-mono">${b.totalPrice.toLocaleString('ar-EG')} ج</td>
+                    <td class="p-4">${statusBadge}</td>
+                    <td class="p-4 text-left flex gap-1 justify-end">${actionsHTML}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // تحديث حالة الحجز في قاعدة البيانات (السيرفر)
+        function updateBookingStatus(id, newStatus) {
+            let confirmMsg = 'هل أنت متأكد من تغيير حالة الجلسة؟';
+            if (newStatus === 'finished') confirmMsg = 'هل انتهت هذه الجلسة بالفعل وتريد تمييزها كجلسة منتهية؟';
+            if (newStatus === 'cancelled') confirmMsg = 'هل أنت متأكد من رغبتك في إلغاء هذا الحجز؟';
+            
+            if (confirm(confirmMsg)) {
+                fetch(`/api/bookings/${id}/status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('تم تحديث حالة الجلسة بنجاح');
+                        refreshDashboardData();
+                    }
+                })
+                .catch(() => showToast('حدث خطأ أثناء تعديل الحالة', true));
+            }
+        }
+
+        function deleteBooking(id) {
+            if (confirm('هل أنت متأكد من حذف الحجز نهائياً من قاعدة البيانات؟')) {
+                fetch(`/api/bookings/${id}`, { method: 'DELETE' })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) { showToast('تم حذف الحجز نهائياً'); refreshDashboardData(); }
+                    });
+            }
+        }
+
+        function filterBookings(filterType) {
+            currentFilter = filterType;
+            const buttons = ['all', 'active', 'finished', 'monthly', 'cancelled'];
+            buttons.forEach(b => {
+                const btn = document.getElementById(`filter-${b}`);
+                btn.className = b === filterType ? "flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm" : "flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600";
+            });
+            renderBookingsTable();
+        }
+
+        function handleSearch() { searchQuery = document.getElementById('search-input').value.trim(); renderBookingsTable(); }
+        function convertTime12h(t) { if (!t) return ''; const [hStr, m] = t.split(':'); let h = parseInt(hStr); return `${h % 12 || 12}:${m} ${h >= 12 ? 'مساءً' : 'صباحاً'}`; }
+        function showToast(m, e=false) { const t = document.getElementById('toast'); document.getElementById('toast-message').innerText = m; t.classList.toggle('bg-rose-600', e); t.classList.remove('opacity-0', 'translate-y-24', 'pointer-events-none'); setTimeout(() => t.classList.add('opacity-0', 'translate-y-24', 'pointer-events-none'), 3000); }
+        
+        // Dark mode helpers
+        function initializeDarkMode() {
+            const html = document.documentElement;
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) html.classList.add('dark');
+        }
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.setItem('darkMode', 'false');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('darkMode', 'true');
+            }
+        }
+        initializeDarkMode();
+    </script>
+</body>
+</html>

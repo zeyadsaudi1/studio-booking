@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حجز جلسة تصوير - استوديو التصوير</title>
+    <!-- Tailwind CSS لتقديم تصميم عصري وسريع -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+    </script>
+    <!-- خط Cairo من Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+        /* مظهر مخصص لأدوات الإدخال الخاصة بالتاريخ والوقت */
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.5);
+            cursor: pointer;
+        }
+        .dark input[type="date"]::-webkit-calendar-picker-indicator,
+        .dark input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen pb-12">
+
+    <!-- شريط التنقل العلوي -->
+    <header class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="logo.png" alt="Logo Light" class="w-14 h-14 object-contain bg-white rounded-xl p-1 border border-slate-200 shadow-sm block dark:hidden">
+                <img src="logo2.png" alt="Logo Dark" class="w-14 h-14 object-contain bg-slate-800 rounded-xl p-1 border border-slate-700 shadow-sm hidden dark:block">
+                <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100">نظام حجز الاستوديو</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" title="تبديل الوضع الليلي">
+                    <svg id="sun-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v2a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l-2.12-2.12a4 4 0 001.414-1.414l2.12 2.12a1 1 0 11-1.414 1.414zM2.05 6.464A1 1 0 103.464 5.05l2.12 2.12a4 4 0 00-1.414 1.414L2.05 6.464zm9.9 9.9a1 1 0 11-1.414-1.414l2.12-2.12a4 4 0 001.414 1.414l-2.12 2.12zM6.464 2.05A1 1 0 105.05 3.464l2.12 2.12a4 4 0 001.414-1.414L6.464 2.05zm9.9 9.9a1 1 0 111.414 1.414l-2.12 2.12a4 4 0 00-1.414-1.414l2.12-2.12z" clip-rule="evenodd"/></svg>
+                    <svg id="moon-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+                </button>
+                <span class="text-xs text-slate-400 font-semibold bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full">بوابة العملاء</span>
+            </div>
+        </div>
+    </header>
+
+    <script>
+        function initializeDarkMode() {
+            const html = document.documentElement;
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) {
+                html.classList.add('dark');
+            }
+        }
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.setItem('darkMode', 'false');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('darkMode', 'true');
+            }
+        }
+        initializeDarkMode();
+    </script>
+
+    <main class="max-w-3xl mx-auto px-4 mt-8">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-extrabold text-slate-900 mb-2">حجز جلسة تصوير</h2>
+            <p class="text-slate-500">اختار النوع المناسب ليك — الأسعار بتتحسب تلقائياً مع الخصومات</p>
+        </div>
+
+        <!-- اختيار نوع الباقة (مخصص أو شهري) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <!-- كارد تسعير مخصص -->
+            <div id="card-custom" onclick="selectBookingType('custom')" class="border-2 border-indigo-600 bg-white p-6 rounded-2xl cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md relative">
+                <div class="absolute top-4 left-4 w-5 h-5 rounded-full border-2 border-indigo-600 flex items-center justify-center">
+                    <div id="dot-custom" class="w-2.5 h-2.5 bg-indigo-600 rounded-full"></div>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-1">تسعير مخصص</h3>
+                <p class="text-xs text-slate-500">ساعات + ريلز + بوستات</p>
+            </div>
+
+            <!-- كارد الباقة الشهرية (المتكاملة) -->
+            <div id="card-monthly" onclick="selectBookingType('monthly')" class="border-2 border-slate-200 bg-white p-6 rounded-2xl cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md relative">
+                <div class="absolute top-4 left-4 w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                    <div id="dot-monthly" class="w-2.5 h-2.5 bg-indigo-600 rounded-full hidden"></div>
+                </div>
+                <div class="flex items-center gap-2 mb-1">
+                    <h3 class="text-lg font-bold text-slate-800">الباقة الشهرية</h3>
+                    <span class="bg-emerald-50 text-emerald-600 text-[10px] px-2 py-0.5 rounded-full font-bold">الأوفر</span>
+                </div>
+                <p class="text-xs text-slate-500">8,000 ج — باقة متكاملة</p>
+            </div>
+        </div>
+
+        <form id="booking-form" onsubmit="handleFormSubmit(event)" class="space-y-6">
+            
+            <!-- 1. تفاصيل الجلسة (تظهر فقط عند اختيار "تسعير مخصص") -->
+            <div id="custom-details-section" class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6 transition-all duration-300">
+                <h4 class="text-md font-bold text-slate-800 border-b border-slate-50 pb-3">تفاصيل الجلسة</h4>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- ساعات التصوير -->
+                    <div class="bg-slate-50 p-4 rounded-xl flex flex-col items-center text-center">
+                        <span class="text-sm font-semibold text-slate-700 mb-1">ساعات التصوير</span>
+                        <span id="rate-hours-text" class="text-xs text-slate-400 mb-3">٢٥٠ ج / ساعة</span>
+                        <div class="flex items-center gap-4 bg-white border border-slate-200 rounded-lg px-2 py-1 shadow-sm mb-2">
+                            <button type="button" onclick="adjustCount('hours', -1)" class="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-md font-bold text-lg">-</button>
+                            <span id="val-hours" class="w-8 text-center font-bold text-slate-800">1</span>
+                            <button type="button" onclick="adjustCount('hours', 1)" class="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-md font-bold text-lg">+</button>
+                        </div>
+                        <span id="discount-hours-badge" class="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full opacity-0 transition-all duration-300"></span>
+                    </div>
+
+                    <!-- عدد الريلز -->
+                    <div class="bg-slate-50 p-4 rounded-xl flex flex-col items-center text-center">
+                        <span class="text-sm font-semibold text-slate-700 mb-1">عدد الريلز</span>
+                        <span id="rate-reels-text" class="text-xs text-slate-400 mb-3">٤٠٠ ج / ريل</span>
+                        <div class="flex items-center gap-4 bg-white border border-slate-200 rounded-lg px-2 py-1 shadow-sm mb-2">
+                            <button type="button" onclick="adjustCount('reels', -1)" class="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-md font-bold text-lg">-</button>
+                            <span id="val-reels" class="w-8 text-center font-bold text-slate-800">0</span>
+                            <button type="button" onclick="adjustCount('reels', 1)" class="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-md font-bold text-lg">+</button>
+                        </div>
+                        <span id="discount-reels-badge" class="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full opacity-0 transition-all duration-300"></span>
+                    </div>
+
+                    <!-- عدد البوستات -->
+                    <div class="bg-slate-50 p-4 rounded-xl flex flex-col items-center text-center">
+                        <span class="text-sm font-semibold text-slate-700 mb-1">عدد البوستات</span>
+                        <span class="text-xs text-slate-400 mb-3">١٥٠ ج / بوست (سعر ثابت)</span>
+                        <div class="flex items-center gap-4 bg-white border border-slate-200 rounded-lg px-2 py-1 shadow-sm mb-2">
+                            <button type="button" onclick="adjustCount('posts', -1)" class="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-md font-bold text-lg">-</button>
+                            <span id="val-posts" class="w-8 text-center font-bold text-slate-800">0</span>
+                            <button type="button" onclick="adjustCount('posts', 1)" class="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-md font-bold text-lg">+</button>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-medium">لا يخضع للخصومات</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. كارت مشتملات الباقة المتكاملة (يظهر فقط عند اختيار "الباقة الشهرية") -->
+            <div id="monthly-details-section" class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4 transition-all duration-300 hidden">
+                <div class="flex items-center justify-between border-b border-slate-50 pb-3">
+                    <h4 class="text-md font-bold text-slate-800">مشتملات الباقة الشهرية المتكاملة</h4>
+                    <span class="bg-indigo-50 text-indigo-700 text-xs px-2.5 py-1 rounded-full font-bold">باقة شاملة VIP</span>
+                </div>
+                
+                <!-- شبكة عرض المميزات -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <!-- عدد الساعات -->
+                    <div class="flex items-center gap-3 bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
+                        <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">١٠ ساعات تصوير كاملة</p>
+                            <p class="text-[11px] text-slate-400">تغطية شاملة واحترافية</p>
+                        </div>
+                    </div>
+
+                    <!-- عدد الريلز -->
+                    <div class="flex items-center gap-3 bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
+                        <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">٤ ريلز (Reels) احترافية</p>
+                            <p class="text-[11px] text-slate-400">تصوير ومونتاج بجودة عالية</p>
+                        </div>
+                    </div>
+
+                    <!-- عدد البوستات -->
+                    <div class="flex items-center gap-3 bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
+                        <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">٨ بوستات مصممة ومميزة</p>
+                            <p class="text-[11px] text-slate-400">تصاميم جرافيك وكتابة محتوى</p>
+                        </div>
+                    </div>
+
+                    <!-- إدارة السوشيال ميديا -->
+                    <div class="flex items-center gap-3 bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
+                        <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">إدارة حسابات السوشيال ميديا</p>
+                            <p class="text-[11px] text-slate-400">جدولة المنشورات والرد على الاستفسارات</p>
+                        </div>
+                    </div>
+
+                    <!-- خدمة رفع الفيديو -->
+                    <div class="flex items-center gap-3 bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
+                        <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">خدمة رفع ونشر الفيديوهات</p>
+                            <p class="text-[11px] text-slate-400">تجهيز الكابشن والهاشتاجات المناسبة</p>
+                        </div>
+                    </div>
+
+                    <!-- منصة خاصة بالشركة -->
+                    <div class="flex items-center gap-3 bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
+                        <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">رفع محتواك علي المنصة الرقمية الخاصة بالشركة   </p>
+                            <p class="text-[11px] text-slate-400">متابعة الفيديوهات والملفات الحصرية</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تفاصيل التسعير الفورية -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                <h4 class="text-md font-bold text-slate-800 border-b border-slate-50 pb-3 mb-4">تفاصيل التسعير</h4>
+                <div class="space-y-3" id="pricing-breakdown">
+                    <!-- تضاف تفاصيل السعر ديناميكياً -->
+                </div>
+                <div class="border-t border-slate-100 pt-4 mt-4 flex justify-between items-center">
+                    <span class="font-bold text-slate-800">الإجمالي</span>
+                    <span id="price-total" class="text-2xl font-black text-indigo-600 font-mono">٢٥٠ ج</span>
+                </div>
+            </div>
+
+            <!-- البيانات الشخصية -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
+                <h4 class="text-md font-bold text-slate-800 border-b border-slate-50 pb-3">بياناتك الشخصية</h4>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- الاسم كامل -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">الاسم كامل</label>
+                        <input type="text" id="client-name" placeholder="محمد أحمد" oninput="validateName()"
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-sm">
+                        <p id="error-name" class="text-rose-500 text-xs mt-1 hidden">من فضلك أدخل اسمك</p>
+                    </div>
+
+                    <!-- رقم الموبايل -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">رقم الموبايل</label>
+                        <input type="tel" id="client-phone" placeholder="01xxxxxxxxx" oninput="validatePhone()"
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-sm text-left" dir="ltr">
+                        <p id="error-phone" class="text-rose-500 text-xs mt-1 hidden">أدخل رقم هاتف صحيح مكون من 11 رقماً</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- موعد الجلسة -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
+                <h4 class="text-md font-bold text-slate-800 border-b border-slate-50 pb-3">موعد الجلسة</h4>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- التاريخ -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">التاريخ</label>
+                        <input type="date" id="session-date" required
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-sm">
+                        <p class="text-slate-400 text-xs mt-1">حدد تاريخ الجلسة</p>
+                    </div>
+
+                    <!-- وقت البداية -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">وقت البداية</label>
+                        <input type="time" id="session-time" required
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-sm">
+                        <p class="text-slate-400 text-xs mt-1">حدد وقت الجلسة</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الملاحظات -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                <label class="block text-sm font-semibold text-slate-700 mb-2">ملاحظات</label>
+                <textarea id="session-notes" rows="3" placeholder="أي تفاصيل إضافية تريد مشاركتها..."
+                    class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-sm resize-none"></textarea>
+            </div>
+
+            <!-- زر تأكيد الحجز -->
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/20 flex items-center justify-center gap-2 text-lg">
+                <span>تأكيد الحجز —</span>
+                <span id="btn-total-text" class="font-mono">٢٥٠ ج</span>
+            </button>
+        </form>
+    </main>
+
+    <!-- Success Modal النافذة المنبثقة للنجاح -->
+    <div id="success-modal" class="fixed inset-0 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm z-50 transition-all duration-300 hidden px-4">
+        <div class="bg-white p-8 rounded-3xl max-w-lg w-full text-center shadow-2xl border border-slate-100 space-y-6 transform scale-95 opacity-0 transition-all duration-300" id="success-modal-card">
+            <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-sm">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="text-2xl font-extrabold text-slate-950">تم تأكيد طلب حجزك بنجاح!</h3>
+                <p class="text-sm text-slate-500">تم تسجيل بياناتك وجدولتها في قاعدة البيانات بنجاح.</p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center justify-center gap-2 relative">
+                <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">كود الحجز الخاص بك</span>
+                <div class="flex items-center gap-3">
+                    <span id="display-booking-id" class="text-2xl font-black text-indigo-600 tracking-wider font-mono">BK-000000</span>
+                    <button onclick="copyBookingCode()" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 p-1.5 rounded-lg transition-all" title="نسخ الكود">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-sm text-slate-700 bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100/40 text-right leading-relaxed space-y-1">
+                <p class="font-bold text-indigo-950">خطوة متبقية لتثبيت الحجز:</p>
+                <p class="text-slate-600">الرجاء التواصل مع خدمة العملاء للدفع في أقرب وقت على الرقم التالي:</p>
+                <div class="flex items-center justify-center gap-2 mt-3 bg-white p-3 rounded-xl border border-indigo-100 shadow-sm"><span class="font-bold text-slate-900 text-lg font-mono">01556448880</span></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <a href="https://wa.me/201556448880" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm">
+                    <span>واتساب خدمة العملاء</span>
+                </a>
+                <button onclick="closeSuccessModal()" class="w-full bg-slate-900 hover:bg-slate-950 text-white font-bold py-3 px-4 rounded-xl transition-all text-sm">حسناً، إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- توست التنبيهات -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 translate-y-24 opacity-0 transition-all duration-300 pointer-events-none z-50">
+        <div class="w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</div>
+        <span id="toast-message" class="text-sm font-semibold">تم الحجز!</span>
+    </div>
+
+    <!-- جافا سكريبت إدارة الحجز والأسعار والنافذة المنبثقة ومشتملات الباقة -->
+    <script>
+        let bookingType = 'custom';
+        let counts = { hours: 1, reels: 0, posts: 0 };
+        const BASE_PRICES = { hours: 250, reels: 400, posts: 150, monthly: 8000 };
+        let latestBookingId = '';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updatePricingUI();
+            document.getElementById('session-date').min = new Date().toISOString().split('T')[0];
+        });
+
+        // دالة التبديل بين الباقات وعرض مشتملات الباقة المتكاملة
+        function selectBookingType(type) {
+            bookingType = type;
+            const cardCustom = document.getElementById('card-custom');
+            const cardMonthly = document.getElementById('card-monthly');
+            const dotCustom = document.getElementById('dot-custom');
+            const dotMonthly = document.getElementById('dot-monthly');
+            
+            const customSection = document.getElementById('custom-details-section');
+            const monthlySection = document.getElementById('monthly-details-section');
+
+            if (type === 'custom') {
+                cardCustom.className = "border-2 border-indigo-600 bg-white p-6 rounded-2xl cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md relative";
+                cardMonthly.className = "border-2 border-slate-200 bg-white p-6 rounded-2xl cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md relative";
+                dotCustom.classList.remove('hidden');
+                dotMonthly.classList.add('hidden');
+                
+                // إظهار العدادات وإخفاء مشتملات الباقة الشهرية
+                customSection.classList.remove('hidden');
+                monthlySection.classList.add('hidden');
+            } else {
+                cardCustom.className = "border-2 border-slate-200 bg-white p-6 rounded-2xl cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md relative";
+                cardMonthly.className = "border-2 border-indigo-600 bg-white p-6 rounded-2xl cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md relative";
+                dotCustom.classList.add('hidden');
+                dotMonthly.classList.remove('hidden');
+                
+                // إخفاء العدادات وإظهار مشتملات الباقة الشهرية المتكاملة
+                customSection.classList.add('hidden');
+                monthlySection.classList.remove('hidden');
+            }
+            updatePricingUI();
+        }
+
+        function adjustCount(item, amount) {
+            if (bookingType !== 'custom') return;
+            let min = (item === 'hours') ? 1 : 0;
+            counts[item] = Math.max(min, counts[item] + amount);
+            document.getElementById(`val-${item}`).innerText = counts[item];
+            updatePricingUI();
+        }
+
+        function getCurrentHourRate() {
+            if (counts.hours >= 10) return 200;
+            if (counts.hours >= 5) return 225;
+            return BASE_PRICES.hours;
+        }
+
+        function getCurrentReelRate() {
+            if (counts.reels >= 10) return 300;
+            if (counts.reels >= 5) return 350;
+            return BASE_PRICES.reels;
+        }
+
+        function calculateTotal() {
+            if (bookingType === 'custom') {
+                return (counts.hours * getCurrentHourRate()) + (counts.reels * getCurrentReelRate()) + (counts.posts * BASE_PRICES.posts);
+            } else {
+                return BASE_PRICES.monthly;
+            }
+        }
+
+        function updatePricingUI() {
+            const breakdown = document.getElementById('pricing-breakdown');
+            const total = calculateTotal();
+            const formattedTotal = total.toLocaleString('ar-EG') + ' ج';
+            
+            document.getElementById('price-total').innerText = formattedTotal;
+            document.getElementById('btn-total-text').innerText = formattedTotal;
+
+            updateDiscountIndicators();
+
+            breakdown.innerHTML = '';
+            if (bookingType === 'custom') {
+                if (counts.hours > 0) {
+                    const rate = getCurrentHourRate();
+                    const discountNote = rate < BASE_PRICES.hours ? ` (تم تطبيق خصم المجموعات)` : '';
+                    breakdown.innerHTML += createBreakdownRow('ساعات التصوير' + discountNote, `${counts.hours} ساعة × ${rate} ج`, (counts.hours * rate));
+                }
+                if (counts.reels > 0) {
+                    const rate = getCurrentReelRate();
+                    const discountNote = rate < BASE_PRICES.reels ? ` (تم تطبيق خصم المجموعات)` : '';
+                    breakdown.innerHTML += createBreakdownRow('عدد الريلز' + discountNote, `${counts.reels} ريل × ${rate} ج`, (counts.reels * rate));
+                }
+                if (counts.posts > 0) {
+                    breakdown.innerHTML += createBreakdownRow('عدد البوستات', `${counts.posts} بوست × ${BASE_PRICES.posts} ج`, (counts.posts * BASE_PRICES.posts));
+                }
+            } else {
+                breakdown.innerHTML += createBreakdownRow('الباقة الشهرية المتكاملة', 'شاملة التصوير والريلز والبوستات والمنصة الخاصة', BASE_PRICES.monthly);
+            }
+        }
+
+        function updateDiscountIndicators() {
+            const hourText = document.getElementById('rate-hours-text');
+            const reelText = document.getElementById('rate-reels-text');
+            const hourBadge = document.getElementById('discount-hours-badge');
+            const reelBadge = document.getElementById('discount-reels-badge');
+
+            if (counts.hours >= 10) {
+                hourText.innerHTML = `<span class="line-through text-slate-300">٢٥٠ ج</span> <span class="text-indigo-600 font-bold">٢٠٠ ج / ساعة</span>`;
+                hourBadge.innerText = 'خصم نشط: ٢٠٠ ج للساعة!';
+                hourBadge.classList.remove('opacity-0');
+            } else if (counts.hours >= 5) {
+                hourText.innerHTML = `<span class="line-through text-slate-300">٢٥٠ ج</span> <span class="text-indigo-600 font-bold">٢٢٥ ج / ساعة</span>`;
+                hourBadge.innerText = 'خصم نشط: ٢٢٥ ج للساعة!';
+                hourBadge.classList.remove('opacity-0');
+            } else {
+                hourText.innerHTML = `٢٥٠ ج / ساعة`;
+                hourBadge.classList.add('opacity-0');
+            }
+
+            if (counts.reels >= 10) {
+                reelText.innerHTML = `<span class="line-through text-slate-300">٤٠٠ ج</span> <span class="text-indigo-600 font-bold">٣٠٠ ج / ريل</span>`;
+                reelBadge.innerText = 'خصم نشط: ٣٠٠٠ ج للـ ١٠ ريلز!';
+                reelBadge.classList.remove('opacity-0');
+            } else if (counts.reels >= 5) {
+                reelText.innerHTML = `<span class="line-through text-slate-300">٤٠٠ ج</span> <span class="text-indigo-600 font-bold">٣٥٠ ج / ريل</span>`;
+                reelBadge.innerText = 'خصم نشط: ١٧٥٠ ج للـ ٥ ريلز!';
+                reelBadge.classList.remove('opacity-0');
+            } else {
+                reelText.innerHTML = `٤٠٠ ج / ريل`;
+                reelBadge.classList.add('opacity-0');
+            }
+        }
+
+        function createBreakdownRow(title, desc, cost) {
+            return `<div class="flex justify-between items-start text-sm">
+                <div>
+                    <p class="font-bold text-slate-700">${title}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">${desc}</p>
+                </div>
+                <span class="font-bold text-slate-700 font-mono">${cost.toLocaleString('ar-EG')} ج</span>
+            </div>`;
+        }
+
+        function validateName() {
+            const nameInput = document.getElementById('client-name');
+            const error = document.getElementById('error-name');
+            if (nameInput.value.trim() === '') {
+                error.classList.remove('hidden');
+                nameInput.classList.add('border-rose-500');
+                return false;
+            } else {
+                error.classList.add('hidden');
+                nameInput.classList.remove('border-rose-500');
+                return true;
+            }
+        }
+
+        function validatePhone() {
+            const phoneInput = document.getElementById('client-phone');
+            const error = document.getElementById('error-phone');
+            const egyptPhoneRegex = /^01[0125][0-9]{8}$/;
+            if (!egyptPhoneRegex.test(phoneInput.value.trim())) {
+                error.classList.remove('hidden');
+                phoneInput.classList.add('border-rose-500');
+                return false;
+            } else {
+                error.classList.add('hidden');
+                phoneInput.classList.remove('border-rose-500');
+                return true;
+            }
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            if (!validateName() || !validatePhone()) {
+                showToast('يرجى تصحيح الأخطاء الحمراء أولاً لاستكمال الحجز', true);
+                return;
+            }
+
+            const bookingId = 'BK-' + Math.floor(100000 + Math.random() * 900000);
+            latestBookingId = bookingId;
+
+            const bookingData = {
+                id: bookingId,
+                clientName: document.getElementById('client-name').value.trim(),
+                phone: document.getElementById('client-phone').value.trim(),
+                type: bookingType,
+                details: bookingType === 'custom' ? { 
+                    hours: counts.hours, reels: counts.reels, posts: counts.posts,
+                    hourRate: getCurrentHourRate(), reelRate: getCurrentReelRate()
+                } : null,
+                date: document.getElementById('session-date').value,
+                time: document.getElementById('session-time').value,
+                notes: document.getElementById('session-notes').value.trim(),
+                totalPrice: calculateTotal(),
+                status: 'active',
+                createdAt: new Date().toISOString()
+            };
+
+            fetch('/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bookingData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    openSuccessModal(bookingId);
+                } else {
+                    showToast('حدث خطأ أثناء الاتصال بقاعدة البيانات', true);
+                }
+            })
+            .catch(() => showToast('فشل الاتصال بالخادم، يرجى المحاولة لاحقاً', true));
+        }
+
+        function openSuccessModal(id) {
+            document.getElementById('display-booking-id').innerText = id;
+            const modal = document.getElementById('success-modal');
+            const card = document.getElementById('success-modal-card');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                card.classList.remove('scale-95', 'opacity-0');
+            }, 50);
+        }
+
+        function closeSuccessModal() {
+            const modal = document.getElementById('success-modal');
+            const card = document.getElementById('success-modal-card');
+            
+            card.classList.add('scale-95', 'opacity-0');
+            modal.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                resetForm();
+            }, 300);
+        }
+
+        function copyBookingCode() { if (latestBookingId) { navigator.clipboard.writeText(latestBookingId); showToast('تم نسخ الكود!'); } }
+        function resetForm() { document.getElementById('booking-form').reset(); selectBookingType('custom'); }
+        function showToast(m, e=false) { const t = document.getElementById('toast'); document.getElementById('toast-message').innerText = m; t.classList.toggle('bg-rose-600', e); t.classList.remove('opacity-0', 'translate-y-24', 'pointer-events-none'); setTimeout(() => t.classList.add('opacity-0', 'translate-y-24', 'pointer-events-none'), 3000); }
+    </script>
+</body>
+</html>
