@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حجز جلسة تصوير - استوديو التصوير</title>
+    <title>حجز جلسة تصوير - استوديو مسَــار</title>
     <!-- Tailwind CSS لتقديم تصميم عصري وسريع -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -115,7 +115,7 @@
                         <span id="rate-hours-text" class="text-xs text-slate-400 mb-3">٢٥٠ ج / ساعة</span>
                         <div class="flex items-center gap-4 bg-white border border-slate-200 rounded-lg px-2 py-1 shadow-sm mb-2">
                             <button type="button" onclick="adjustCount('hours', -1)" class="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-md font-bold text-lg">-</button>
-                            <span id="val-hours" class="w-8 text-center font-bold text-slate-800">1</span>
+                            <span id="val-hours" class="w-8 text-center font-bold text-slate-800">0</span>
                             <button type="button" onclick="adjustCount('hours', 1)" class="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-md font-bold text-lg">+</button>
                         </div>
                         <span id="discount-hours-badge" class="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full opacity-0 transition-all duration-300"></span>
@@ -343,7 +343,7 @@
     <!-- جافا سكريبت إدارة الحجز والأسعار والنافذة المنبثقة ومشتملات الباقة -->
     <script>
         let bookingType = 'custom';
-        let counts = { hours: 1, reels: 0, posts: 0 };
+        let counts = { hours: 0, reels: 0, posts: 0 };
         const BASE_PRICES = { hours: 250, reels: 400, posts: 150, monthly: 8000 };
         let latestBookingId = '';
 
