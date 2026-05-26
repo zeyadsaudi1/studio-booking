@@ -80,7 +80,4 @@ app.delete('/api/bookings/:id', async (req, res) => {
     }
 });
 
-// تشغيل الخادم
-app.listen(PORT, () => {
-    console.log(`الخادم السحابي لـ MongoDB يعمل بنجاح على المنفذ: ${PORT}`);
-});
+module.exports = app;
