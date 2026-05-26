@@ -387,7 +387,7 @@
 
         function adjustCount(item, amount) {
             if (bookingType !== 'custom') return;
-            let min = (item === 'hours') ? 1 : 0;
+            let min = 0;
             counts[item] = Math.max(min, counts[item] + amount);
             document.getElementById(`val-${item}`).innerText = counts[item];
             updatePricingUI();
